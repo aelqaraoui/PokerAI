@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/amine/CLionProjects/PokerAI/cards.h
+iostream
+-
+bits/stdc++.h
+-
+
+/home/amine/CLionProjects/PokerAI/main.cpp
+iostream
+-
+pokerAI.h
+/home/amine/CLionProjects/PokerAI/pokerAI.h
+GLFW/glfw3.h
+-
+
+/home/amine/CLionProjects/PokerAI/pokerAI.h
+iostream
+-
+bits/stdc++.h
+-
+fstream
+-
+cards.h
+/home/amine/CLionProjects/PokerAI/cards.h
+
