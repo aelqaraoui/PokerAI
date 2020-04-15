@@ -1,16 +1,14 @@
 #include <iostream>
-#include "pokerAI.h"
+#include "game.h"
 
 int main() {
 
-    game poker(100);
+    game poker(1000);
 
-    poker.nextRound();
-
-
-    int cards[] = {0, 1, 3, 4, 2};
-
-    cout << pokerAI(cards, 5, 10, 50) << endl;
-
+    int i = 0;
+    while(i < 5){
+	poker.nextRound();
+	i++;
+    }
     return 0;
 }

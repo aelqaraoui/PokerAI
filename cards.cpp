@@ -55,30 +55,27 @@ bool royalFlush(int* cards, int nbCards){
 
     int* nbSuits = new int[4];
     for(int i = 0; i < 4; i++)	nbSuits[i] = 0;
-
+ 
     for(int i = 0; i < nbCards; i++)	nbSuits[(int)(cards[i]/13)]++;
 
     int maxSuit = 0;
     for(int i = 1; i < 4; i++)	if(nbSuits[i] > nbSuits[maxSuit])	maxSuit = i;
-    if(nbSuits[maxSuit] < 5)	return false;
+    if(nbSuits[maxSuit] < 5){	delete[] nbSuits; return false; 	}
 
     int* same = new int[(int)nbSuits[maxSuit]];   // the biggest set of same suit cards
     int id = 0;
     for(int i = 0; i < nbCards; i++)	if((cards[i]/13) == maxSuit){ same[id] = cards[i]%13; id++; };
     sort(same, same + nbSuits[maxSuit], greater<int>());
+    bool truth = true;
     if(same[0] != 12){
-        delete nbSuits;
-        delete same;
-        return false;
+	truth = false;
     }
-    for(int i = 0; i < 4; i++)	if((same[i]-same[i+1]) != 1){
-            delete nbSuits;
-            delete same;
-            return false;
-        }
-    delete nbSuits;
-    delete same;
-    return true;
+    for(int i = 0; i < 4; i++)	if((same[i]-same[i+1]) != 1)	truth = false;
+    
+    delete[] nbSuits;
+    delete[] same;
+    
+    return truth;
 
 }
 
@@ -91,9 +88,13 @@ bool straightFlush(int* cards, int nbCards){
 
     int maxSuit = 0;
     for(int i = 1; i < 4; i++)	if(nbSuits[i] > nbSuits[maxSuit])	maxSuit = i;
-    if(nbSuits[maxSuit] < 5)	return false;
+    
+    if(nbSuits[maxSuit] < 5){	
+	delete[] nbSuits; 
+	return false; 	
+    }
 
-    int* same = new int[(int)nbSuits[maxSuit]];   // the biggest set of same suit cards
+    int* same = new int[nbSuits[maxSuit]];   // the biggest set of same suit cards
     int id = 0;
     for(int i = 0; i < nbCards; i++)	if((cards[i]/13) == maxSuit){ same[id] = cards[i]%13; id++; };
     sort(same, same + nbSuits[maxSuit], greater<int>());
@@ -104,8 +105,10 @@ bool straightFlush(int* cards, int nbCards){
         for(int i = j; i < j+4; i++)	result = result && ((same[i]-same[i+1]) == 1);
         if(result)	break;
     }
-    delete nbSuits;
-    delete same;
+    
+    delete[] nbSuits;
+    delete[] same;
+    
     return result;
 
 }
@@ -119,12 +122,10 @@ bool kind(int* cards, int n, int nbCards){
 
     int maxRank = 0;
     for(int i = 1; i < 13; i++)	if(nbRanks[i] > nbRanks[maxRank])	maxRank = i;
-    if(nbRanks[maxRank] < n){
-        delete nbRanks;
-        return false;
-    }
-    delete nbRanks;
-    return true;
+    
+    bool truth = !(nbRanks[maxRank] < n);
+    delete[] nbRanks;
+    return truth;
 
 }
 
@@ -135,9 +136,10 @@ bool fullHouse(int* cards, int nbCards){
 
     for(int i = 0; i < nbCards; i++)	nbRanks[(int)(cards[i]%13)]++;
     sort(nbRanks, nbRanks+13, greater<int>());
-
-    delete nbRanks;
-    return (nbRanks[0] >= 3 && nbRanks[1] >= 2);
+    
+    bool truth = (nbRanks[0] >= 3 && nbRanks[1] >= 2);
+    delete[] nbRanks;
+    return truth;
 
 }
 
@@ -150,13 +152,12 @@ bool twoPairs(int* cards, int nbCards){
     for(int i = 0; i < nbCards; i++)	nbRanks[(int)(cards[i]%13)]++;
     sort(nbRanks, nbRanks+13, greater<int>());
 
-    if(nbRanks[0] >= 2 && nbRanks[1] >= 2){
-        delete nbRanks;
-        return true;
-    }else{
-        delete nbRanks;
-        return true;
-    }
+    bool truth = true;
+    if(!(nbRanks[0] >= 2 && nbRanks[1] >= 2))	truth = false;
+
+    delete[] nbRanks;
+    return truth;
+    
 }
 
 bool flush(int* cards, int nbCards){
@@ -168,12 +169,11 @@ bool flush(int* cards, int nbCards){
 
     int maxSuit = 0;
     for(int i = 1; i < 4; i++)	if(nbSuits[i] > nbSuits[maxSuit])	maxSuit = i;
-    if(nbSuits[maxSuit] < 5){
-        delete nbSuits;
-        return false;
-    }
-    delete nbSuits;
-    return true;
+    
+    bool truth = true;
+    if(nbSuits[maxSuit] < 5)	truth = false;
+    delete[] nbSuits;
+    return truth;
 
 }
 
@@ -217,13 +217,16 @@ bool straight(int* cards, int nbCards){
     for(int i = 0; i < nbCards-1; i++){
 
         int counter = 1;
-        do{ counter++; i++; }
-        while(ranks[i+1]-ranks[i] == 1 && i+1 < nbCards);
+        do{ 
+		counter++; i++; 
+		if(i+1 == nbCards-1)	break; }
+        
+	while(ranks[i+1]-ranks[i] == 1);
         occ.push_back(counter);
 
     }
     sort(occ.begin(), occ.end(), greater<int>());
-    delete ranks;
+    delete[] ranks;
     if(occ[0] >= 5){
         vector<int>().swap(occ);
         return true;
@@ -247,6 +250,6 @@ int checkHand(int* cards, int nbCards){
         if(twoPairs(cards, nbCards))	return TWOPAIRS * 52 + ((cards[0]%13) + (cards[1]%13));
         if(kind(cards, 2, nbCards))	return PAIR * 52 + ((cards[0]%13) + (cards[1]%13));
         return HIGHCARD + ((cards[0]%13) + (cards[1]%13))*((int)(cards[0]/13 == cards[1]/13) + 1);
-    }
+    }else	return -1;
 
 }

@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/PokerAI.dir/main.cpp.o CMakeFiles/PokerAI.dir/game.cpp.o CMakeFiles/PokerAI.dir/cards.cpp.o CMakeFiles/PokerAI.dir/pokerAI.cpp.o  -o PokerAI /usr/local/lib/libglfw3.a /usr/lib/x86_64-linux-gnu/librt.so -lm -ldl /usr/lib/x86_64-linux-gnu/libX11.so -lpthread /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so 

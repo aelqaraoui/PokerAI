@@ -4,6 +4,7 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include <string>
+#include "pokerAI.h"
 #include "cards.h"
 
 using namespace std;
@@ -23,12 +24,11 @@ typedef struct _player{
 
 class game{
 public:
-    int round = 0;
-    int pot = 0;
+    int pot;
     int buyIn;
 
-    int nbPlayers = 2;
-    vector<player*> players;
+    int nbPlayers;
+    vector<player> players;
     vector<int> stillPlaying;
 
     pair<int, int> bigBlind;
@@ -40,8 +40,10 @@ public:
     int* communityCards;
 
     game(int buyin);
+    ~game();
+    void initializeRound();
     void dealPlayersCards();
-    void collectBets();
+    void collectBets(int nbCardsDealt);
     void evaluateRound();
     void nextRound();
 

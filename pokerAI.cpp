@@ -2,7 +2,7 @@
 
 double potOdds(int bet, int pot){
 
-    return (pot + bet)/pot;
+    return (double)pot/(double)(pot + bet);
 
 }
 
@@ -12,7 +12,7 @@ double rateReturn(int* cards, int nbCards, double potOdds){
     int nbGames = 0;
     if(nbCards == 2){
 
-        ifstream handStrength("/home/amine/CLionProjects/PokerAI/decision/" + to_string(min(cards[0], cards[1])) + "_" + to_string(max(cards[0], cards[1])) + ".txt");
+        ifstream handStrength("./decision/" + to_string(min(cards[0], cards[1])) + "_" + to_string(max(cards[0], cards[1])) + ".txt");
         string line;
         getline(handStrength, line);
         HS = stod(line);
@@ -22,7 +22,7 @@ double rateReturn(int* cards, int nbCards, double potOdds){
 
     }else{
 
-        int* deck = new int[52-nbCards];
+        int* deck = new int[52-nbCards]();
         int indexDeck = 0;
 
         for(int i = 0; i < 52; i++){
@@ -34,11 +34,12 @@ double rateReturn(int* cards, int nbCards, double potOdds){
             }
         }
 
-        int* plcards = new int[9];
+        int* plcards = new int[9]();
         for(int i = 0; i < nbCards; i++)    plcards[i] = cards[i];
-        int n = 9 - nbCards;
+        
+	int n = 9 - nbCards;
         int N = 52 - nbCards;
-        int* item = new int[n];
+        int* item = new int[n]();
         for (int i = 0; i < n; i++) item[i] = i;
         int nb = 0;
         int wins = 0;
@@ -49,7 +50,7 @@ double rateReturn(int* cards, int nbCards, double potOdds){
 
             do{
 
-                if(checkHand(cards) > checkHand(plcards + 2))   wins++;
+                if(checkHand(plcards) > checkHand(plcards + 2))   wins++;
                 nb++;
 
             }while(next_permutation(plcards + n, plcards + 9));
@@ -58,6 +59,10 @@ double rateReturn(int* cards, int nbCards, double potOdds){
 
         HS = wins;
         nbGames = nb;
+
+	delete[] deck;
+	delete[] plcards;
+	delete[] item;
 
     }
 
@@ -69,10 +74,9 @@ double rateReturn(int* cards, int nbCards, double potOdds){
 
 int proba(double fold, double call_or_check, double raise){
 
-    srand(time(NULL));
     int randomNb = rand()%100;
-    if(randomNb <= (int)fold*100) return FOLD;
-    else if(randomNb <= (int)call_or_check*100)  return CALL_OR_CHECK;
+    if(randomNb <= (int)(fold*100)) return FOLD;
+    else if(randomNb <= (int)((fold + call_or_check)*100))  return CALL_OR_CHECK;
     else    return RAISE;
 
 }
@@ -94,6 +98,7 @@ int FCR(int* cards, int nbCards, int bet, double potOdds){
 
 int pokerAI(int* cards, int nbCards, int bet, int pot){
 
+    srand(time(NULL));
     double po = potOdds(bet, pot);
 
     return FCR(cards, nbCards, bet, po);
