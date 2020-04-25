@@ -1,9 +1,9 @@
 #include <iostream>
-#include "game.h"
+#include "controller.h"
 
 int main() {
 
-    game poker(1000);
+    controller poker(1000);
 
     int i = 0;
     while(i < 5){
