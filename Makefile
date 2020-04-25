@@ -1,4 +1,4 @@
-TARGETS=main.cpp game.cpp pokerAI.cpp cards.cpp
+TARGETS=main.cpp controller.cpp data.cpp interface.cpp pokerAI.cpp cards.cpp
  
 CC_CPP = g++
 CC_C = gcc
