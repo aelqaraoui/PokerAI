@@ -6,8 +6,8 @@
 #include <fstream>
 #include "cards.h"
 
-#define CALL_OR_CHECK 0
-#define FOLD 1
+#define FOLD 0
+#define CALL_OR_CHECK 1
 #define RAISE 2
 
 using namespace std;

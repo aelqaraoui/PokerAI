@@ -5,33 +5,34 @@ string readHand(int card){
     string result = "";
     switch(card%13){
         case 12:
-            result += "Ace ";
+            result += "ace";
             break;
         case 11:
-            result += "King ";
+            result += "king";
             break;
         case 10:
-            result += "Queen ";
+            result += "queen";
             break;
         case 9:
-            result += "Jack ";
+            result += "jack";
             break;
         default:
-            result += to_string((card%13)+2 ) + " ";
+            result += to_string((card%13)+2 );
             break;
     }
+    result += "_of_";
     switch(card/13){
         case 0:
-            result += "of Clubs";
+            result += "clubs";
             break;
         case 1:
-            result += "of Diamonds";
+            result += "diamonds";
             break;
         case 2:
-            result += "of Hearts";
+            result += "hearts";
             break;
         case 3:
-            result += "of Spades";
+            result += "spades";
             break;
     }
     return result;
