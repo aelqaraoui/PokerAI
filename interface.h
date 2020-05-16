@@ -47,6 +47,7 @@ class interface {
 public:
 	int action;
 	int raise;
+	int replay;
 	const int SCREEN_WIDTH;
 	const int SCREEN_HEIGHT;
 	SDL_Window *window;
@@ -54,6 +55,10 @@ public:
 	SDL_Event event;
 
 	LTexture* background;
+	LTexture* orchid;
+	LTexture* winner;
+	LButton* replaybtn;
+	LButton* quitbtn;
 	LButton* btns[3];
 	SDL_Texture* cards[52];
 	SDL_Texture* back;
@@ -88,6 +93,7 @@ public:
 	int getAction();
 	void setRaise();
 	int getRaise();
+	int getReplay();
 
 };
 

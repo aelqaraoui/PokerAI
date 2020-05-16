@@ -5,7 +5,7 @@ int main() {
 
 	controller poker(1000);
 
-	for(int i = 0; i < 10; i++)	poker.nextRound();
+	while(poker.nextRound());
 
 /*
 	interface gameInterface(640, 480);

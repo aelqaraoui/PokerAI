@@ -25,7 +25,7 @@ public:
     void dealPlayersCards();
     void collectBets(int nbCardsDealt);
     void evaluateRound();
-    void nextRound();
+    bool nextRound();
 
 };
 

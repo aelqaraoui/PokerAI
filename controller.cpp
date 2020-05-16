@@ -1,6 +1,6 @@
 #include "controller.h"
 
-controller::controller(int buyin) : gameData(buyin), gameInterface(640, 480){
+controller::controller(int buyin) : gameData(buyin), gameInterface(800, 600){
 
     player pl;
     pl.name = "Amine";
@@ -197,7 +197,7 @@ void controller::evaluateRound(){
 
 }
 
-void controller::nextRound(){
+bool controller::nextRound(){
 
     cout << "################# NEW ROUND ################# " << endl;	
     
@@ -234,5 +234,7 @@ void controller::nextRound(){
 
 
     evaluateRound();
+    bool pl = (gameInterface.getReplay() == 0);
     gameInterface.resetGame();
+    return pl;
 }

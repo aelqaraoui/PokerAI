@@ -177,14 +177,14 @@ void LButton::render(){
 
 }
 
-interface::interface(int width, int height) : action(-1), raise(-1), SCREEN_WIDTH(width), SCREEN_HEIGHT(height){
+interface::interface(int width, int height) : action(-1), raise(-1), replay(-1), SCREEN_WIDTH(width), SCREEN_HEIGHT(height){
 
 	window = NULL;
 	renderer = NULL;
 	
-	for(int i = 0; i < 2; i++)	cardsPos[i] = {640*2/9 + i * 640/9 , 480/3 + 480*3/12, 50, 80};
-	for(int i = 0; i < 2; i++)	cardsPos[i+2] = {640*5/9 + i * 640/9, 480/3 + 480*3/12, 50, 80};
-	for(int i = 0; i < 5; i++)	cardsPos[i+4] = {640*2/9 + i * 640/9 , 480/3 + 480*1/15, 50, 80};
+	for(int i = 0; i < 2; i++)	cardsPos[i] = {SCREEN_WIDTH*2/9 + i * SCREEN_WIDTH/9 , SCREEN_HEIGHT/3 + SCREEN_HEIGHT*3/12, 50, 80};
+	for(int i = 0; i < 2; i++)	cardsPos[i+2] = {SCREEN_WIDTH*5/9 + i * SCREEN_WIDTH/9, SCREEN_HEIGHT/3 + SCREEN_HEIGHT*3/12, 50, 80};
+	for(int i = 0; i < 5; i++)	cardsPos[i+4] = {SCREEN_WIDTH*2/9 + i * SCREEN_WIDTH/9 , SCREEN_HEIGHT/3 + SCREEN_HEIGHT*1/15, 50, 80};
 
 	textColor = {0, 0, 0};
 
@@ -218,15 +218,22 @@ interface::interface(int width, int height) : action(-1), raise(-1), SCREEN_WIDT
 					std::cout << "SDL_TTF couldn't open amatic_regular.ttf! SDL_TTF ERROR : " << TTF_GetError() << std::endl;	
 
 				//Initialize Background
-				SDL_Rect pos = {0, 100, SCREEN_WIDTH, 300};
+				SDL_Rect pos = {0, SCREEN_HEIGHT / 6, SCREEN_WIDTH, SCREEN_HEIGHT * 4 / 6};
 				background = new LTexture(renderer, "background.png", pos);
+				pos = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+				orchid = new LTexture(renderer, "black-orchid.png", pos);
+
+				pos = {0, 0, 100, 50};
+				replaybtn = new LButton(renderer, "Replay", pos, font);
+				pos = {0, 150, 100, 50};
+				quitbtn = new LButton(renderer, "Quit", pos, font);
 
 				//Initialize Buttons
- 				pos = {SCREEN_WIDTH / 2, SCREEN_HEIGHT * 8 / 10 + SCREEN_HEIGHT / 20, 100, 50};
+ 				pos = {SCREEN_WIDTH / 4, SCREEN_HEIGHT * 8 / 10 + SCREEN_HEIGHT / 20, 100, 50};
 				btns[0] = new LButton(renderer, "Fold", pos, font);
-				pos = {SCREEN_WIDTH / 2 + SCREEN_WIDTH / 6, SCREEN_HEIGHT * 8 / 10 + SCREEN_HEIGHT / 20, 100, 50};
+				pos = {SCREEN_WIDTH / 4 + SCREEN_WIDTH / 6, SCREEN_HEIGHT * 8 / 10 + SCREEN_HEIGHT / 20, 100, 50};
 				btns[1] = new LButton(renderer, "Call", pos, font);
-				pos = {SCREEN_WIDTH / 2 + SCREEN_WIDTH * 2 / 6, SCREEN_HEIGHT * 8 / 10 + SCREEN_HEIGHT / 20, 100, 50};
+				pos = {SCREEN_WIDTH / 4 + SCREEN_WIDTH * 2 / 6, SCREEN_HEIGHT * 8 / 10 + SCREEN_HEIGHT / 20, 100, 50};
 				btns[2] = new LButton(renderer, "Raise", pos, font);
 
 
@@ -251,6 +258,8 @@ interface::~interface(){
 	SDL_DestroyTexture(background->m_texture);
 	delete background;
 	SDL_DestroyTexture(back);
+	delete replaybtn;
+	delete quitbtn;
 	for(int i = 0; i < 3; i++)	delete btns[i];
 	for(int i = 0; i < 52; i++)	SDL_DestroyTexture(cards[i]);
 	SDL_DestroyRenderer(renderer);
@@ -272,28 +281,6 @@ void interface::resetGame(){
 
 }
 
-/*
-void interface::drawInit(std::pair<int, int> hand){
-
-	bool quit = false;
-	while(!quit){
-
-		SDL_RenderClear(renderer);
-		
-		background->render();
-
-		for(int i = 0; i < 3; i++)	btns[i]->render();
-
-		
-
-		SDL_SetRenderDrawColor(renderer, 47, 79, 79, 255);
-		SDL_RenderPresent(renderer);
-	
-	}
-
-}
-*/
-
 SDL_Texture* interface::loadTexture(std::string path){
 
 	SDL_Texture *loadedTexture = NULL;
@@ -314,28 +301,7 @@ SDL_Texture* interface::loadTexture(std::string path){
 	return loadedTexture;
 
 }
-/*
-SDL_Texture* interface::loadText(std::string text){
 
-	SDL_Texture* loadedTexture = NULL;
-
-	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColor);
-	if(textSurface == NULL)
-		std::cout << "Unable to render text surface! SDL_TTF ERROR : " << TTF_GetError() << std::endl;
-	else{
-	
-		loadedTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-		if(loadedTexture == NULL)
-			std::cout << "Unable to create texture from rendered text! SDL ERROR : " << SDL_GetError() << std::endl;
-
-		SDL_FreeSurface(textSurface);
-
-	}
-
-	return loadedTexture;
-
-}
-*/
 void interface::renderBackground(){
 
 	SDL_RenderClear(renderer);
@@ -382,70 +348,11 @@ void interface::setPlayerHand(std::pair<int, int> hand){
 
 }
 
-void interface::showPlayerHand(std::pair<int, int> hand){
-
-	bool quit = false;
-
-	while(!quit){
-		renderBackground();
-		
-		for(int i = 0; i < 4; i++)	hands[i]->render();
-		
-		show();
-	}	
-	/*
-	SDL_RenderCopy(renderer, cards[hand.first], NULL, &cardsPos[2*i]);
-	SDL_RenderCopy(renderer, cards[hand.second], NULL, &cardsPos[2*i+1]);
-	
-	for(int i = 0; i < nbCards; i++)
-		SDL_RenderCopy(renderer, cards[card[i+4]], NULL, &cardsPos[i+4]);
-
-	SDL_RenderPresent(renderer);
-*/
-}
-/*
-void interface::renderButton(std::string text, SDL_Rect pos){
-
-	SDL_SetRenderDrawColor(renderer, 105, 105, 105, 255);
-	for(int i = pos.x; i < pos.x + pos.w; i++)
-		for(int j = pos.y; j < pos.y + pos.h; j++){
-
-			double radius = pos.h * 5 / 10;
-			if(i < pos.x + radius && j < pos.y + radius){
-				double pf = (double)(pow(i - (pos.x + radius) , 2) + (double)pow(j - (pos.y + radius), 2))/(double)pow(radius, 2); 
-				if(pf <= 1)	SDL_RenderDrawPoint(renderer, i, j);
-			}else if(i > pos.x + pos.w - radius && j > pos.y + pos.h - radius){
-				double pf = (double)(pow(i - (pos.x + pos.w - radius) , 2) + (double)pow(j - (pos.y + pos.h - radius), 2))/(double)pow(radius, 2); 
-				if(pf <= 1)	SDL_RenderDrawPoint(renderer, i, j);
-			}else if(i < pos.x + radius && j > pos.y + pos.h - radius){
-				double pf = (double)(pow(i - (pos.x + radius) , 2) + (double)pow(j - (pos.y + pos.h - radius), 2))/(double)pow(radius, 2); 
-				if(pf <= 1)	SDL_RenderDrawPoint(renderer, i, j);
-			}else if(i > pos.x + pos.w - radius && j < pos.y + radius){
-				double pf = (double)(pow(i - (pos.x + pos.w -radius) , 2) + (double)pow(j - (pos.y + radius), 2))/(double)pow(radius, 2); 
-				if(pf <= 1)	SDL_RenderDrawPoint(renderer, i, j);
-			}else 	SDL_RenderDrawPoint(renderer, i, j);
-
-		}
-
-	SDL_Texture* loadedText = loadText(text);
-	pos.x += pos.w / 10;
-        pos.y += pos.h / 10;
-	pos.w -= pos.w * 2 / 10;
-	pos.h -= pos.h *2 /10;	
-	SDL_RenderCopy(renderer, loadedText, NULL, &pos);
-
-}
-
-void interface::showPlayerHand(std::pair<int, int> hand){
-
-	std::cout << "Your hand : " << readHand(hand.first) << " and " << readHand(hand.second) << std::endl;
-
-}
-*/
-
 void interface::resetButtons(){
 
 	for(int i = 0; i < 3; i++)	btns[i]->current = NOT_CLICKED;
+	replaybtn->current = NOT_CLICKED;
+	quitbtn->current = NOT_CLICKED;
 
 }
 
@@ -456,15 +363,41 @@ void interface::setOpponentHand(std::pair<int, int> hand){
 
 }
 
-void interface::showOpponentHand(){
-
-
-
-}
-
 void interface::celebrateWinner(std::string name, int pot){
 
-	std::cout << name << " won " << pot << std::endl;
+//	std::cout << name << " won " << pot << std::endl;
+
+	SDL_Rect pos = {0, 0, SCREEN_WIDTH / 2, 100};
+	winner = new LTexture(renderer, name + " won.", pos, font, textColor);
+		
+	while(replay == -1){
+
+		SDL_RenderClear(renderer);
+		
+		background->render();
+
+		while(SDL_PollEvent(&event)){
+			if(replaybtn->handleEvent(&event) == true)	replay = 0;
+			else if(quitbtn->handleEvent(&event) == true)	replay = 1;
+		}
+
+		if(replay == 0)	quitbtn->current = NOT_CLICKED;
+		if(replay == 1)	replaybtn->current = NOT_CLICKED;
+
+		for(int i = 0; i < 3; i++)	btns[i]->render();
+	
+		for(int i = 0; i < 4; i++)	hands[i]->render();
+
+		showCommunityCards();
+
+		orchid->render();
+		winner->render();
+		replaybtn->render();
+		quitbtn->render();
+
+		show();
+
+	}
 
 }
 
@@ -493,7 +426,7 @@ void interface::setAction(){
 		
 		show();
 
-	}	
+	}
 
 }
 
@@ -520,3 +453,10 @@ int interface::getRaise(){
 
 }
 
+int interface::getReplay(){
+
+	int pl = replay;
+	replay = -1;
+	return pl;
+
+}
